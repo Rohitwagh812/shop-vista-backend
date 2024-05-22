@@ -331,7 +331,7 @@ app.post('/order/product', async (req , res , next) =>{
   } catch (err){
     res.status(505).json({ message: 'Internal server error' });
   }
-next()
+// next()
 })
 
 
