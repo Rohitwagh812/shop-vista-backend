@@ -29,7 +29,7 @@ sellers.post('/signup' , async (req , res) =>{
     }).catch(err => console.log(err.message))
 
 } )
- 
+  
 
 sellers.post('/login', async (req, res) => {
     try {

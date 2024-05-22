@@ -67,7 +67,8 @@ db.on('error' , (error)=>{
 
 
 app.use(cors({
-  origin: 'https://shop-vista-six.vercel.app',
+  // origin: 'https://shop-vista-six.vercel.app',
+  origin: 'http://localhost:5173',
   credentials: true  
 }));
 
