@@ -59,18 +59,18 @@ db.on('error' , (error)=>{
     console.log(error)
 })
  
-// app.use(cors({
-//   origin: 'http://localhost:5173',
-//   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-// }));
-
-
 app.use(cors({
-  // origin: 'https://shop-vista-six.vercel.app',
   origin: 'http://localhost:5173',
-  credentials: true  
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+
+// app.use(cors({
+//   // origin: 'https://shop-vista-six.vercel.app',
+//   origin: 'http://localhost:5173',
+//   credentials: true  
+// }));
 
 const verifyUser = (req , res ,next) =>{
     const token =  req.cookies.token;
