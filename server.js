@@ -81,9 +81,9 @@ const verifyUser = (req , res ,next) =>{
         jwt.verify(token , process.env.JWT_SECRET_KEY, (err , decoded) =>{
             if(err) return res.json("Token is wrong")
             next()
-        // if(decoded){
-        //     res.json(decoded)
-        // }
+        if(decoded){
+            res.json(decoded)
+        }
          })
     }
 
