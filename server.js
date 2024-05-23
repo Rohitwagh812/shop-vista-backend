@@ -143,7 +143,7 @@ app.post('/signup', async (req, res) => {
         bcrypt.compare(password , user.password , (err , response) => {
             if(response){
                 const token = jwt.sign({name:user.name, email: user.email, password: user.password ,id: user._id }, process.env.JWT_SECRET_KEY , {expiresIn:"2h"})
-                res.cookie('token' , token , {maxAge: 2*60*60*1000})
+                res.cookie('token' , token , {maxAge: 2*60*60*1000} , { httpOnly: true, secure: true, sameSite: 'none' })
                 res.json("Success")
             } else{
                 res.json("the password is incorrect")
@@ -154,6 +154,14 @@ app.post('/signup', async (req, res) => {
        }
     })
 });
+
+// app.post('/signin', async (req, res) => {
+//   // Your signin logic
+//   const token = 'your_generated_token'; // Example token
+//   res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' }); // Example of setting a cookie
+//   res.json({ message: 'Signin successful' });
+// });
+
 
 
 
