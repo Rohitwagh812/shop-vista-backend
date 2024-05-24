@@ -14,8 +14,12 @@ const jwt = require('jsonwebtoken');
 
 app.use(express.json());
 
+const json = require('json')
+
+app.use(json())
+
 app.use(bodyParser.urlencoded({extended: true}));
-// app.use(bodyParser.json({limit: "30mb", extended: true}));
+app.use(bodyParser.json({limit: "30gb", extended: true}));
 // app.use(bodyParser.urlencoded({limit: "30mb", extended: true}));
 
 app.use(cookieParser());
@@ -78,7 +82,7 @@ const verifyUser = (req , res ,next) =>{
     if(!token){
         return res.json("The token was not availabe")
     } else{
-        jwt.verify(token , "process.env.JWT_SECRET_KEY", (err , decoded) =>{
+        jwt.verify(token , process.env.JWT_SECRET_KEY, (err , decoded) =>{
             if(err) return res.json("Token is wrong")
             next()
         // if(decoded){
@@ -106,7 +110,7 @@ app.get('/current', (req, res) => {
     }
   
     try { 
-      const decoded = jwt.verify(token, "process.env.JWT_SECRET_KEY"); 
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); 
      res.json(decoded) 
       const userData = decoded.user;  
       res.json(userData);
@@ -143,7 +147,7 @@ app.post('/signup', async (req, res) => {
        if(user) {
         bcrypt.compare(password , user.password , (err , response) => {
             if(response){
-                const token = jwt.sign({name:user.name, email: user.email, password: user.password ,id: user._id }, "process.env.JWT_SECRET_KEY ", {expiresIn:"2h"})
+                const token = jwt.sign({name:user.name, email: user.email, password: user.password ,id: user._id }, process.env.JWT_SECRET_KEY, {expiresIn:"2h"})
                 res.cookie('token' , token , {maxAge: 2*60*60*1000})
                 res.json("Success")
             } else{
