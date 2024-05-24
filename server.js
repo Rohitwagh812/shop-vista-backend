@@ -61,8 +61,8 @@ db.on('error' , (error)=>{
  
 app.use(cors({
   origin: 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  // methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  // allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true 
 }));
 
@@ -78,12 +78,12 @@ const verifyUser = (req , res ,next) =>{
     if(!token){
         return res.json("The token was not availabe")
     } else{
-        jwt.verify(token , process.env.JWT_SECRET_KEY, (err , decoded) =>{
+        jwt.verify(token , "process.env.JWT_SECRET_KEY", (err , decoded) =>{
             if(err) return res.json("Token is wrong")
             next()
-        if(decoded){
-            res.json(decoded)
-        }
+        // if(decoded){
+        //     res.json(decoded)
+        // }
          })
     }
 
@@ -106,7 +106,7 @@ app.get('/current', (req, res) => {
     }
   
     try { 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); 
+      const decoded = jwt.verify(token, "process.env.JWT_SECRET_KEY"); 
      res.json(decoded) 
       const userData = decoded.user;  
       res.json(userData);
@@ -143,8 +143,8 @@ app.post('/signup', async (req, res) => {
        if(user) {
         bcrypt.compare(password , user.password , (err , response) => {
             if(response){
-                const token = jwt.sign({name:user.name, email: user.email, password: user.password ,id: user._id }, process.env.JWT_SECRET_KEY , {expiresIn:"2h"})
-                res.cookie('token' , token , {maxAge: 2*60*60*1000} , { httpOnly: true, secure: true, sameSite: 'none' })
+                const token = jwt.sign({name:user.name, email: user.email, password: user.password ,id: user._id }, "process.env.JWT_SECRET_KEY ", {expiresIn:"2h"})
+                res.cookie('token' , token , {maxAge: 2*60*60*1000})
                 res.json("Success")
             } else{
                 res.json("the password is incorrect")
