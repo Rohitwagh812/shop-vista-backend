@@ -140,25 +140,57 @@ app.post('/signup', async (req, res) => {
 
 // user signin
 
-   app.post('/signin', async (req, res)=>{
-    const { email , password } = req.body;
-    cilent.findOne({email : email})
-    .then(user =>{
-       if(user) {
-        bcrypt.compare(password , user.password , (err , response) => {
-            if(response){
-                const token = jwt.sign({name:user.name, email: user.email, password: user.password ,id: user._id }, process.env.JWT_SECRET_KEY, {expiresIn:"2h"})
-                res.cookie('token' , token , {maxAge: 2*60*60*1000})
-                res.json("Success")
-            } else{
-                res.json("the password is incorrect")
-            }
-        }) 
-       } else{
-        res.json("no record existed")
-       }
-    })
+//    app.post('/signin', async (req, res)=>{
+//     const { email , password } = req.body;
+//     cilent.findOne({email : email})
+//     .then(user =>{
+//        if(user) {
+//         bcrypt.compare(password , user.password , (err , response) => {
+//             if(response){
+//                 const token = jwt.sign({name:user.name, email: user.email, password: user.password ,id: user._id }, process.env.JWT_SECRET_KEY, {expiresIn:"2h"})
+//                 res.cookie('token' , token , {maxAge: 2*60*60*1000} , { httpOnly: true, secure: true, sameSite: 'none' })
+//                 res.json("Success")
+//             } else{
+//                 res.json("the password is incorrect")
+//             }
+//         }) 
+//        } else{
+//         res.json("no record existed")
+//        }
+//     })
+// });
+
+
+app.post('/signin', async (req, res) => {
+  const { email, password } = req.body;
+  Client.findOne({ email: email })
+      .then(user => {
+          if (user) {
+              bcrypt.compare(password, user.password, (err, response) => {
+                  if (response) {
+                      const token = jwt.sign(
+                          { name: user.name, email: user.email, id: user._id },
+                          process.env.JWT_SECRET_KEY,
+                          { expiresIn: "2h" }
+                      );
+                      res.cookie('token', token, {
+                          maxAge: 2 * 60 * 60 * 1000,
+                          httpOnly: true,
+                          secure: true,
+                          sameSite: 'none'
+                      });
+                      res.json("Success");
+                  } else {
+                      res.json("The password is incorrect");
+                  }
+              });
+          } else {
+              res.json("No record existed");
+          }
+      })
+      .catch(err => res.status(500).json({ message: "Internal server error", error: err }));
 });
+
 
 // app.post('/signin', async (req, res) => {
 //   // Your signin logic
