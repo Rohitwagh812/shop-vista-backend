@@ -14,9 +14,7 @@ const jwt = require('jsonwebtoken');
 
 app.use(express.json());
 
-const json = require('json')
 
-app.use(json())
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({limit: "30gb", extended: true}));
