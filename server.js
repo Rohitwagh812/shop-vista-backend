@@ -49,7 +49,9 @@ const Order = require('./module/order')
 
 const mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGO_URI)
+// mongoose.connect(process.env.MONGO_URI)
+
+mongoose.connect(process.env.MONGO_URI);
 
 const db = mongoose.connection;
 
@@ -61,12 +63,17 @@ db.on('error' , (error)=>{
     console.log(error)
 })
  
+// app.use(cors({
+//   origin: 'http://localhost:5173',
+//   // methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true 
+// }));
+
 app.use(cors({
-  origin: 'http://localhost:5173',
-  // methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-  // allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true 
-}));
+  origin: ['http://localhost:5173', 'https://shop-vista-six.vercel.app'],
+  credentials: true
+}))
 
 
 // app.use(cors({
@@ -138,7 +145,7 @@ app.post('/signup', async (req, res) => {
 
 // user signin
 
-//    app.post('/signin', async (req, res)=>{
+//    app.post('/signin', async (req, res , next)=>{
 //     const { email , password } = req.body;
 //     cilent.findOne({email : email})
 //     .then(user =>{
@@ -146,7 +153,7 @@ app.post('/signup', async (req, res) => {
 //         bcrypt.compare(password , user.password , (err , response) => {
 //             if(response){
 //                 const token = jwt.sign({name:user.name, email: user.email, password: user.password ,id: user._id }, process.env.JWT_SECRET_KEY, {expiresIn:"2h"})
-//                 res.cookie('token' , token , {maxAge: 2*60*60*1000} , { httpOnly: true, secure: true, sameSite: 'none' })
+//                 res.cookie('token' , token , {maxAge: 2*60*60*1000})
 //                 res.json("Success")
 //             } else{
 //                 res.json("the password is incorrect")
@@ -156,38 +163,42 @@ app.post('/signup', async (req, res) => {
 //         res.json("no record existed")
 //        }
 //     })
+
+//     next()
 // });
 
 
 app.post('/signin', async (req, res) => {
   const { email, password } = req.body;
-  Client.findOne({ email: email })
-      .then(user => {
-          if (user) {
-              bcrypt.compare(password, user.password, (err, response) => {
-                  if (response) {
-                      const token = jwt.sign(
-                          { name: user.name, email: user.email, id: user._id },
-                          process.env.JWT_SECRET_KEY,
-                          { expiresIn: "2h" }
-                      );
-                      res.cookie('token', token, {
-                          maxAge: 2 * 60 * 60 * 1000,
-                          httpOnly: true,
-                          secure: true,
-                          sameSite: 'none'
-                      });
-                      res.json("Success");
-                  } else {
-                      res.json("The password is incorrect");
-                  }
+  try {
+      const user = await cilent.findOne({ email: email });
+      if (user) {
+          const isPasswordCorrect = await bcrypt.compare(password, user.password);
+          if (isPasswordCorrect) {
+              const token = jwt.sign(
+                  { name: user.name, email: user.email, id: user._id },
+                  process.env.JWT_SECRET_KEY,
+                  { expiresIn: "2h" }
+              );
+              res.cookie('token', token, {
+                  maxAge: 2 * 60 * 60 * 1000,
+                  httpOnly: true,
+                  secure: true,
+                  sameSite: 'none'
               });
+              return res.json("Success");
           } else {
-              res.json("No record existed");
+              return res.json("The password is incorrect");
           }
-      })
-      .catch(err => res.status(500).json({ message: "Internal server error", error: err }));
+      } else {
+          return res.json("No record existed");
+      }
+  } catch (err) {
+      console.error("Error during signin:", err);
+      return res.status(500).json({ message: "Internal server error" });
+  }
 });
+
 
 
 // app.post('/signin', async (req, res) => {
