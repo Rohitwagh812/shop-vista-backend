@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({limit: "30gb", extended: true}));
 // app.use(bodyParser.urlencoded({limit: "30mb", extended: true}));
 
-app.use(cookieParser());
+app.use(cookieParser()); 
 
 const cilent = require('./module/cilent')
 
@@ -168,7 +168,7 @@ app.post('/signup', async (req, res) => {
 // });
 
 
-app.post('/signin', async (req, res) => {
+app.post('/signin', async (req, res , next) => {
   const { email, password } = req.body;
   try {
       const user = await cilent.findOne({ email: email });
@@ -197,6 +197,8 @@ app.post('/signin', async (req, res) => {
       console.error("Error during signin:", err);
       return res.status(500).json({ message: "Internal server error" });
   }
+
+  next()
 });
 
 
