@@ -214,17 +214,28 @@ app.post('/signin', async (req, res , next) => {
 
 
 // user has be logout 
-app.post('/logout', (req, res) => {
-    // Clear session/token or perform any necessary logout actions
-    req.session.destroy(err => {
-        if (err) {
-            return res.status(500).json({ message: "Error logging out" });
-        }
-        res.clearCookie('token'); // Clear any session cookies
-        res.status(200).json({ message: "Logged out successfully" });
-    });
-});
+// app.post('/logout', (req, res) => {
+//     // Clear session/token or perform any necessary logout actions
+//     req.session.destroy(err => {
+//         if (err) {
+//             return res.status(500).json({ message: "Error logging out" });
+//         }
+//         res.clearCookie('token'); // Clear any session cookies
+//         res.status(200).json({ message: "Logged out successfully" });
+//     });
+// });
 
+
+app.post('/logout', (req, res) => {
+  // Clear session or perform any necessary logout actions
+  req.session.destroy(err => {
+      if (err) {
+          return res.status(500).json({ message: "Error logging out" });
+      }
+      res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'none' }); // Clear the token cookie
+      res.status(200).json({ message: "Logged out successfully" });
+  });
+});
 
 //  user account delete 
 
